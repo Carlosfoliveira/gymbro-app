@@ -1,4 +1,5 @@
-MVP
+# MVP
+
 [] Autenticação -> Google Oauth2
 [] Visualizar Academia
 [] Visualizar Treino
@@ -7,7 +8,8 @@ MVP
 [] Aprovar/Recusar Invite
 [] Setar informações do usuário
 
-Futuro
+# Futuro
+
 [] Ranking do usuário
 [] Mostrar academias mais próximas do usuário primeiro
 [] Colocar mapa com academias
