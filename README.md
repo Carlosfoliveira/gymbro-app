@@ -16,6 +16,7 @@
 [] Feedback do treino
 
 # Como rodar
+
 - Baixe o app do expo na loja do seu celular
 - Vincule sua conta
 - Rode npm run start ou npx expo start
@@ -26,3 +27,4 @@
 
 - Expo: https://docs.expo.dev/
 - React Navigation: https://reactnavigation.org/
+- NativeWind: https://www.nativewind.dev/
