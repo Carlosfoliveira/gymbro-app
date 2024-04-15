@@ -1,10 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
-// import { NativeWindStyleSheet } from "nativewind";
-
-// NativeWindStyleSheet.setOutput({
-//   default: "native",
-// });
+import { StatusBar } from "expo-status-bar";
+import { Text, View } from "react-native";
 
 export function Home() {
   return (
