@@ -1,11 +1,16 @@
-import { StatusBar } from 'react-native';
-import { Navigation } from './navigation'
-import { registerRootComponent } from 'expo';
+import { registerRootComponent } from "expo";
+import { StatusBar } from "react-native";
+
+import { Navigation } from "./navigation";
 
 export default function App() {
   return (
     <>
-      <StatusBar translucent barStyle='light-content' backgroundColor='transparent' />
+      <StatusBar
+        translucent
+        barStyle="light-content"
+        backgroundColor="transparent"
+      />
       <Navigation />
     </>
   );
