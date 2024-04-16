@@ -21,7 +21,7 @@ export function Login() {
 
   useEffect(() => {
     offset.value = withTiming(0, {
-      duration: 800,
+      duration: 600,
       easing: Easing.bezier(0.12, 0.74, 0.47, 1.03),
       reduceMotion: ReduceMotion.System,
     });
