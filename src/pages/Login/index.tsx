@@ -1,10 +1,32 @@
 import Dumbbell from "@icons/Dumbbell";
+import { useEffect } from "react";
 import { Text, TextInput, TouchableHighlight, View } from "react-native";
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  Easing,
+  ReduceMotion,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BackButton, Button } from "@/components";
 
 export function Login() {
+  const offset = useSharedValue(800);
+
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+
+  useEffect(() => {
+    offset.value = withTiming(0, {
+      duration: 600,
+      easing: Easing.bezier(0.12, 0.74, 0.47, 1.03),
+      reduceMotion: ReduceMotion.System,
+    });
+  }, [offset]);
+
   return (
     <View className="flex-1 bg-primary">
       <SafeAreaView className="flex">
@@ -15,7 +37,10 @@ export function Login() {
           <Dumbbell width={150} height={150} />
         </View>
       </SafeAreaView>
-      <View className="flex-1 bg-white px-8 pt-8 rounded-tl-[50px] rounded-tr-[50px]">
+      <Animated.View
+        style={animatedStyles}
+        className="flex-1 bg-white px-8 pt-8 rounded-tl-[50px] rounded-tr-[50px]"
+      >
         <View className="form space-y-2">
           <Text className="text-gray-700 ml-4">Email</Text>
           <TextInput
@@ -41,7 +66,7 @@ export function Login() {
           </TouchableHighlight>
           <Button>Login</Button>
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 }
