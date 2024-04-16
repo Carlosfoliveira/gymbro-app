@@ -1,9 +1,11 @@
 import Dumbbell from "@icons/Dumbbell";
 import { useNavigation } from "@react-navigation/native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useCallback, useState } from "react";
 import {
+  GestureResponderEvent,
   Text,
   TextInput,
-  TouchableHighlight,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -11,11 +13,30 @@ import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BackButton, Button, DismissKeyboard } from "@/components";
+import { auth } from "@/config/firebase";
 import { useBotToTopAnimation } from "@/hooks";
 
 export function SignUp() {
   const { navigate } = useNavigation();
   const animatedStyles = useBotToTopAnimation();
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = useCallback(
+    async (e: GestureResponderEvent) => {
+      if (firstName && lastName && email && password) {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.log("got error: ", err.message);
+        }
+      }
+    },
+    [email, firstName, lastName, password],
+  );
 
   return (
     <DismissKeyboard>
@@ -38,14 +59,16 @@ export function SignUp() {
               className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-3"
               inputMode="text"
               autoComplete="name"
-              value="Carlos"
+              value={firstName}
+              onChangeText={(value) => setFirstName(value)}
             />
             <Text className="text-gray-700 ml-4">Sobrenome</Text>
             <TextInput
               className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-3"
               inputMode="text"
               autoComplete="family-name"
-              value="Oliveira"
+              value={lastName}
+              onChangeText={(value) => setLastName(value)}
             />
             <Text className="text-gray-700 ml-4">Email</Text>
             <TextInput
@@ -55,18 +78,20 @@ export function SignUp() {
               autoComplete="email"
               autoCapitalize="none"
               autoCorrect={false}
-              value="carlos@gymbro.com"
+              value={email}
+              onChangeText={(value) => setEmail(value)}
             />
             <Text className="text-gray-700 ml-4">Senha</Text>
             <TextInput
               className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-4"
+              placeholder="Enter Password"
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
-              value="123456"
-              placeholder="Enter Password"
+              value={password}
+              onChangeText={(value) => setPassword(value)}
             />
-            <Button>Cadastrar</Button>
+            <Button onPress={handleSubmit}>Cadastrar</Button>
           </View>
           <View className="my-4 flex-row justify-center">
             <Text className="text-gray-400 font-semibold">
