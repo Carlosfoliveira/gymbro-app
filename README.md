@@ -27,4 +27,5 @@
 
 - Expo: https://docs.expo.dev/
 - React Navigation: https://reactnavigation.org/
-- NativeWind: https://www.nativewind.dev/
+- NativeWind: https://www.nativewind.dev/np
+- Atomic Design: https://tinyurl.com/yru527rn
