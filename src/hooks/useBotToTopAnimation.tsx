@@ -17,7 +17,7 @@ export function useBotToTopAnimation() {
   useEffect(() => {
     offset.value = withTiming(0, {
       duration: 600,
-      easing: Easing.bezier(0.12, 0.74, 0.47, 1.03),
+      easing: Easing.bezier(0.12, 0.74, 0.47, 1.0),
       reduceMotion: ReduceMotion.System,
     });
   }, [offset]);
