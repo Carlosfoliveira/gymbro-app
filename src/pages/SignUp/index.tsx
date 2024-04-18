@@ -1,7 +1,7 @@
 import Dumbbell from "@icons/Dumbbell";
 import { useNavigation } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import {
   GestureResponderEvent,
   Text,
@@ -9,8 +9,16 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import Animated from "react-native-reanimated";
+
+import actions from "./actions";
+import {
+  SignUpReducer,
+  SignUpReducerInitialState,
+  SignUpReducerUserType,
+} from "./reducer";
 
 import { BackButton, Button, CustomKeyboardView } from "@/components";
 import { auth } from "@/config/firebase";
@@ -19,23 +27,49 @@ import { useBotToTopAnimation } from "@/hooks";
 export function SignUp() {
   const { navigate } = useNavigation();
   const animatedStyles = useBotToTopAnimation();
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, dispatch] = useReducer(
+    SignUpReducer,
+    SignUpReducerInitialState,
+  );
+
+  const handleUserDataChange = useCallback(
+    (key: keyof SignUpReducerUserType, value: string) => {
+      dispatch({
+        type: actions.SET_USER_DATA,
+        payload: {
+          ...state,
+          [key]: value,
+        },
+      });
+    },
+    [state],
+  );
 
   const handleSubmit = useCallback(
     async (e: GestureResponderEvent) => {
+      const { firstName, lastName, email, password } = state.user;
       if (firstName && lastName && email && password) {
         try {
+          dispatch({ type: actions.SIGNUP_REQUEST });
           await createUserWithEmailAndPassword(auth, email, password);
+          dispatch({ type: actions.SIGNUP_SUCCESS });
         } catch (err) {
           // eslint-disable-next-line no-console
           console.log("got error: ", err.message);
+          dispatch({
+            type: actions.SIGNUP_ERROR,
+            payload: { message: err.message },
+          });
+
+          if (err.message.includes("auth/email-already-in-use")) {
+            Alert.alert("Este email já está em uso");
+          } else {
+            Alert.alert("Erro", err.message);
+          }
         }
       }
     },
-    [email, firstName, lastName, password],
+    [state.user],
   );
 
   return (
@@ -62,16 +96,20 @@ export function SignUp() {
                   className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-3"
                   inputMode="text"
                   autoComplete="name"
-                  value={firstName}
-                  onChangeText={(value) => setFirstName(value)}
+                  value={state.user.firstName}
+                  onChangeText={(value) =>
+                    handleUserDataChange("firstName", value)
+                  }
                 />
                 <Text className="text-gray-700 ml-4">Sobrenome</Text>
                 <TextInput
                   className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-3"
                   inputMode="text"
                   autoComplete="family-name"
-                  value={lastName}
-                  onChangeText={(value) => setLastName(value)}
+                  value={state.user.lastName}
+                  onChangeText={(value) =>
+                    handleUserDataChange("lastName", value)
+                  }
                 />
                 <Text className="text-gray-700 ml-4">Email</Text>
                 <TextInput
@@ -81,8 +119,8 @@ export function SignUp() {
                   autoComplete="email"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  value={email}
-                  onChangeText={(value) => setEmail(value)}
+                  value={state.user.email}
+                  onChangeText={(value) => handleUserDataChange("email", value)}
                 />
                 <Text className="text-gray-700 ml-4">Senha</Text>
                 <TextInput
@@ -91,11 +129,15 @@ export function SignUp() {
                   secureTextEntry
                   autoCapitalize="none"
                   autoCorrect={false}
-                  value={password}
-                  onChangeText={(value) => setPassword(value)}
+                  value={state.user.password}
+                  onChangeText={(value) =>
+                    handleUserDataChange("password", value)
+                  }
                 />
 
-                <Button onPress={handleSubmit}>Cadastrar</Button>
+                <Button onPress={handleSubmit} loading={state.loading}>
+                  Cadastrar
+                </Button>
               </View>
               <View className="my-4 flex-row justify-center">
                 <Text className="text-gray-400 font-semibold">

@@ -1,0 +1,8 @@
+const actions = {
+  SET_LOGIN_DATA: "SET_LOGIN_DATA",
+  LOGIN_REQUEST: "LOGIN_REQUEST",
+  LOGIN_SUCCESS: "LOGIN_SUCCESS",
+  LOGIN_ERROR: "LOGIN_ERROR",
+};
+
+export default actions;
