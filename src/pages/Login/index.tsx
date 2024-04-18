@@ -1,7 +1,7 @@
 import Dumbbell from "@icons/Dumbbell";
 import { useNavigation } from "@react-navigation/native";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import {
   Text,
   TextInput,
@@ -9,8 +9,16 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import Animated from "react-native-reanimated";
+
+import actions from "./actions";
+import {
+  LoginReducer,
+  LoginReducerInitialState,
+  LoginReducerStateType,
+} from "./reducer";
 
 import { BackButton, Button, CustomKeyboardView } from "@/components";
 import { auth } from "@/config/firebase";
@@ -20,19 +28,45 @@ export function Login() {
   const { navigate } = useNavigation();
   const animatedStyles = useBotToTopAnimation();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, dispatch] = useReducer(LoginReducer, LoginReducerInitialState);
+
+  const handleUserDataChange = useCallback(
+    (key: keyof LoginReducerStateType, value: string) => {
+      dispatch({
+        type: actions.SET_LOGIN_DATA,
+        payload: {
+          ...state,
+          [key]: value,
+        },
+      });
+    },
+    [state],
+  );
 
   const handleSubmit = useCallback(async () => {
+    const { email, password } = state;
+
     if (email && password) {
       try {
+        dispatch({ type: actions.LOGIN_REQUEST });
         await signInWithEmailAndPassword(auth, email, password);
+        dispatch({ type: actions.LOGIN_SUCCESS });
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log("got error: ", err.message);
+        dispatch({
+          type: actions.LOGIN_ERROR,
+          payload: { message: err.message },
+        });
+
+        if (err.message.includes("auth/invalid-credential")) {
+          Alert.alert("Email ou Senha incorretos");
+        } else {
+          Alert.alert("Erro", err.message);
+        }
       }
     }
-  }, [email, password]);
+  }, [state]);
 
   return (
     <View className="h-screen bg-white">
@@ -61,8 +95,8 @@ export function Login() {
                   autoComplete="email"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  value={email}
-                  onChangeText={(value) => setEmail(value)}
+                  value={state.email}
+                  onChangeText={(value) => handleUserDataChange("email", value)}
                 />
                 <Text className="text-gray-700 ml-4">Senha</Text>
                 <TextInput
@@ -71,13 +105,17 @@ export function Login() {
                   autoCapitalize="none"
                   autoCorrect={false}
                   placeholder="Enter Password"
-                  value={password}
-                  onChangeText={(value) => setPassword(value)}
+                  value={state.password}
+                  onChangeText={(value) =>
+                    handleUserDataChange("password", value)
+                  }
                 />
                 <TouchableHighlight className="flex items-end mb-5">
                   <Text className="text-gray-700">Esqueceu sua senha?</Text>
                 </TouchableHighlight>
-                <Button onPress={handleSubmit}>Login</Button>
+                <Button onPress={handleSubmit} loading={state.loading}>
+                  Login
+                </Button>
               </View>
               <View className="my-4 flex-row justify-center">
                 <Text className="text-gray-400 font-semibold">

@@ -1,0 +1,8 @@
+const actions = {
+  SET_USER_DATA: "SET_USER_DATA",
+  SIGNUP_REQUEST: "SIGNUP_REQUEST",
+  SIGNUP_SUCCESS: "SIGNUP_SUCCESS",
+  SIGNUP_ERROR: "SIGNUP_ERROR",
+};
+
+export default actions;
